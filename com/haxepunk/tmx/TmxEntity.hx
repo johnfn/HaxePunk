@@ -154,7 +154,7 @@ class TmxEntity extends Entity
 
 		var gid:Int;
 		var layer:TmxLayer = map.layers.get(collideLayer);
-		var grid = new Grid(map.fullWidth, map.fullHeight, map.tileWidth, map.tileHeight);
+		var grid = new Grid(screenWidth * map.tileWidth, screenHeight * map.tileHeight, map.tileWidth, map.tileHeight);
 
 		// Loop through tile layer ids
 		for (col in (mapX * screenWidth)...(mapX * screenWidth + screenWidth))
