@@ -133,6 +133,13 @@ class Entity extends Tweener
 
 	}
 
+	// special instructions for how to destroy an entity.
+	// can be overriden for special behavior.
+	public function destroy():Void {
+		HXP.scene.remove(this);
+		this.graphic = null;
+	}
+
 	/**
 	 * Renders the Entity. If you override this for special behaviour,
 	 * remember to call super.render() to render the Entity's graphic.
