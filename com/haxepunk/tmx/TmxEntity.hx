@@ -13,10 +13,13 @@ class TmxEntity extends Entity
 	public var screenWidth:Int = 0;
 	public var screenHeight:Int = 0;
 	public var map:TmxMap;
+	public var cache:Map<String, Array<Array<Int>>>;
 
 	public function new(mapData:Dynamic, screenWidth:Int = 0, screenHeight:Int = 0)
 	{
 		super();
+
+		this.cache = new Map();
 
 		this.screenHeight = screenHeight;
 		this.screenWidth = screenWidth;
@@ -175,6 +178,46 @@ class TmxEntity extends Entity
 		setHitbox(grid.width, grid.height);
 	}
 
+	public function getLocs(collideLayer:String = "collide", typeName:String = "solid",  mapX:Int, mapY:Int, skip:Array<Int> = null):Array<Array<Int>>
+	{
+		var locs:Array<Array<Int>> = [];
+		this.mask = null;
+
+		if (!map.layers.exists(collideLayer))
+		{
+#if debug
+				trace("Layer '" + collideLayer + "' doesn't exist");
+#end
+			return null;
+		}
+
+		var key:String = '$mapX $mapY $collideLayer';
+
+		if (cache.exists(key)) {
+			return cache.get(key);
+		}
+
+		var gid:Int;
+		var layer:TmxLayer = map.layers.get(collideLayer);
+		var grid = new Grid(screenWidth * map.tileWidth, screenHeight * map.tileHeight, map.tileWidth, map.tileHeight);
+
+		// Loop through tile layer ids
+		for (col in (mapX * screenWidth)...(mapX * screenWidth + screenWidth))
+		{
+			for (row in (mapY * screenHeight)...(mapY * screenHeight + screenHeight))
+			{
+				gid = layer.tileGIDs[row][col] - 1;
+				if (gid < 0) continue;
+				if (skip == null || Lambda.has(skip, gid) == false) {
+					locs.push([col - mapX * screenWidth, row - mapY * screenHeight]);
+				}
+			}
+		}
+
+		cache.set(key, locs);
+
+		return locs;
+	}
 
 
 }
